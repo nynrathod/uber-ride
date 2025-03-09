@@ -8,8 +8,10 @@ import (
 
 var EnvConfigs *envConfigs
 
-func InitEnvConfigs() {
+// InitEnvConfigs loads environment variables and returns the configuration.
+func InitEnvConfigs() *envConfigs {
 	EnvConfigs = loadEnvVariables()
+	return EnvConfigs
 }
 
 type envConfigs struct {
@@ -24,21 +26,23 @@ type envConfigs struct {
 	SmtpToEmail     string `mapstructure:"SMTP_TO_EMAIL"`
 	VerrifyOtpToken string `mapstructure:"VERIFY_OTP_TOKEN"`
 	ENV             string `mapstructure:"ENV"`
+	HTTPS           string `mapstructure:"HTTPS"`
 }
 
-// Call to load the variables from env
-func loadEnvVariables() (config *envConfigs) {
+// loadEnvVariables loads the environment variables from .env and unmarshals them.
+func loadEnvVariables() *envConfigs {
 	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
-	// Viper reads all the variables from env file and log error if any found
+	// Viper reads the configuration file
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal("Error reading env file", err)
 	}
 
-	// Viper unmarshals the loaded env varialbes into the struct
+	// Unmarshal the environment variables into the struct.
+	var config envConfigs
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Fatal(err)
 	}
-	return
+	return &config
 }

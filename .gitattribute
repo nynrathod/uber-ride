@@ -1,4 +1,15 @@
+# Enforce LF for text files
 * text=auto eol=lf
+
+# Treat Go files, sum files, and mod files as text with LF endings
+*.go text eol=lf
+go.sum text eol=lf
+go.mod text eol=lf
+
+# Ensure PEM files are treated as text with LF endings
+*.pem text eol=lf
+
+# Binary files should not be modified
 *.png binary
 *.jpg binary
 *.gif binary
