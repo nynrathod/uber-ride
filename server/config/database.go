@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/nynrathod/uber-ride/internal/driver"
 	"github.com/nynrathod/uber-ride/internal/payment"
 	"github.com/nynrathod/uber-ride/internal/ride"
@@ -9,15 +11,14 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
 )
 
-// DB is the global database instance
+// DB is the global database instance.
 var DB *gorm.DB
 
-// ConnectDB initializes PostgreSQL connection
-func ConnectDB() {
-	// Load from environment variables
+// ConnectDB initializes the PostgreSQL connection and returns the DB instance.
+func ConnectDB() *gorm.DB {
+	// Build the DSN using the environment configuration.
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Singapore",
 		EnvConfigs.DbHost,
@@ -28,29 +29,30 @@ func ConnectDB() {
 	)
 	fmt.Println("DSN:", dsn)
 
-	// Connect to PostgreSQL
+	// Connect to PostgreSQL using GORM.
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info), // Enable logging for queries
+		Logger: logger.Default.LogMode(logger.Info), // Enable SQL logging
 	})
 	if err != nil {
 		log.Fatal("❌ Failed to connect to DB:", err)
 	}
 
-	// Set the global DB instance
+	// Set the global DB instance.
 	DB = db
-
 	log.Println("✅ Connected to PostgreSQL successfully!")
 
-	// Run Auto Migrations
+	// Run auto-migrations.
 	MigrateDB()
+
+	return DB
 }
 
-// GetDB returns the database instance
+// GetDB returns the global database instance.
 func GetDB() *gorm.DB {
 	return DB
 }
 
-// MigrateDB runs the auto-migrations
+// MigrateDB runs auto-migration for all models.
 func MigrateDB() {
 	err := DB.AutoMigrate(
 		&user.User{},

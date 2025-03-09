@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/nynrathod/uber-ride/config"
+	cfg "github.com/nynrathod/uber-ride/config"
 	usr "github.com/nynrathod/uber-ride/internal/user"
 )
 
@@ -14,7 +14,7 @@ func NewAppServiceInitializer() *AppServiceInitializer {
 }
 
 func (initializer *AppServiceInitializer) InitializeAppServices() AppServices {
-	db := config.GetDB()
+	db := cfg.GetDB()
 	if db == nil {
 		panic("Database connection is not initialized")
 	}
